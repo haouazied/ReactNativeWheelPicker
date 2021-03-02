@@ -190,95 +190,98 @@ public class LoopView extends View {
             super.onDraw(canvas);
             return;
         }
-        as = new String[itemCount];
-        change = (int) (totalScrollY / (lineSpacingMultiplier * maxTextHeight));
-        preCurrentIndex = initPosition + change % arrayList.size();
-        if (!isLoop) {
-            if (preCurrentIndex < 0) {
-                preCurrentIndex = 0;
+        if(maxTextHeight != 0){
+            as = new String[itemCount];
+            change = (int) (totalScrollY / (lineSpacingMultiplier * maxTextHeight));
+            preCurrentIndex = initPosition + change % arrayList.size();
+            if (!isLoop) {
+                if (preCurrentIndex < 0) {
+                    preCurrentIndex = 0;
+                }
+                if (preCurrentIndex > arrayList.size() - 1) {
+                    preCurrentIndex = arrayList.size() - 1;
+                }
+                // break;
+            } else {
+                if (preCurrentIndex < 0) {
+                    preCurrentIndex = arrayList.size() + preCurrentIndex;
+                }
+                if (preCurrentIndex > arrayList.size() - 1) {
+                    preCurrentIndex = preCurrentIndex - arrayList.size();
+                }
+                // continue;
             }
-            if (preCurrentIndex > arrayList.size() - 1) {
-                preCurrentIndex = arrayList.size() - 1;
-            }
-            // break;
-        } else {
-            if (preCurrentIndex < 0) {
-                preCurrentIndex = arrayList.size() + preCurrentIndex;
-            }
-            if (preCurrentIndex > arrayList.size() - 1) {
-                preCurrentIndex = preCurrentIndex - arrayList.size();
-            }
-            // continue;
-        }
 
-        int j2 = (int) (totalScrollY % (lineSpacingMultiplier * maxTextHeight));
-        int k1 = 0;
-        while (k1 < itemCount) {
-            int l1 = preCurrentIndex - (itemCount / 2 - k1);
-            if (isLoop) {
-                if (l1 < 0) {
-                    l1 = l1 + arrayList.size();
-                }
-                if (l1 > arrayList.size() - 1) {
-                    l1 = l1 - arrayList.size();
-                }
-                as[k1] = (String) arrayList.get(l1);
-            } else if (l1 < 0) {
-                as[k1] = "";
-            } else if (l1 > arrayList.size() - 1) {
-                as[k1] = "";
-            } else {
-                as[k1] = (String) arrayList.get(l1);
-            }
-            k1++;
-        }
-        canvas.drawLine(0.0F, firstLineY, measuredWidth, firstLineY, paintC);
-        canvas.drawLine(0.0F, secondLineY, measuredWidth, secondLineY, paintC);
-        int j1 = 0;
-        while (j1 < itemCount) {
-            canvas.save();
-            // L=α* r
-            // (L * π ) / (π * r)
-            float itemHeight = maxTextHeight * lineSpacingMultiplier;
-            double radian = ((itemHeight * j1 - j2) * Math.PI) / halfCircumference;
-            float angle = (float) (90D - (radian / Math.PI) * 180D);
-            if (angle >= 90F || angle <= -90F) {
-                canvas.restore();
-            } else {
-                int translateY = (int) (radius - Math.cos(radian) * radius - (Math.sin(radian) * maxTextHeight) / 2D);
-                canvas.translate(0.0F, translateY);
-                canvas.scale(1.0F, (float) Math.sin(radian));
-                if (translateY <= firstLineY && maxTextHeight + translateY >= firstLineY) {
-                    canvas.save();
-                    //top = 0,left = (measuredWidth - maxTextWidth)/2
-                    canvas.clipRect(0, 0, measuredWidth, firstLineY - translateY);
-                    drawCenter(canvas, paintA, as[j1],maxTextHeight);
-                    canvas.restore();
-                    canvas.save();
-                    canvas.clipRect(0, firstLineY - translateY, measuredWidth, (int) (itemHeight));
-                    drawCenter(canvas, paintB, as[j1], maxTextHeight);
-                    canvas.restore();
-                } else if (translateY <= secondLineY && maxTextHeight + translateY >= secondLineY) {
-                    canvas.save();
-                    canvas.clipRect(0, 0, measuredWidth, secondLineY - translateY);
-                    drawCenter(canvas, paintB, as[j1], maxTextHeight);
-                    canvas.restore();
-                    canvas.save();
-                    canvas.clipRect(0, secondLineY - translateY, measuredWidth, (int) (itemHeight));
-                    drawCenter(canvas, paintA, as[j1],maxTextHeight);
-                    canvas.restore();
-                } else if (translateY >= firstLineY && maxTextHeight + translateY <= secondLineY) {
-                    canvas.clipRect(0, 0, measuredWidth, (int) (itemHeight));
-                    drawCenter(canvas, paintB, as[j1],maxTextHeight);
-                    selectedItem = arrayList.indexOf(as[j1]);
+            int j2 = (int) (totalScrollY % (lineSpacingMultiplier * maxTextHeight));
+            int k1 = 0;
+            while (k1 < itemCount) {
+                int l1 = preCurrentIndex - (itemCount / 2 - k1);
+                if (isLoop) {
+                    if (l1 < 0) {
+                        l1 = l1 + arrayList.size();
+                    }
+                    if (l1 > arrayList.size() - 1) {
+                        l1 = l1 - arrayList.size();
+                    }
+                    as[k1] = (String) arrayList.get(l1);
+                } else if (l1 < 0) {
+                    as[k1] = "";
+                } else if (l1 > arrayList.size() - 1) {
+                    as[k1] = "";
                 } else {
-                    canvas.clipRect(0, 0, measuredWidth, (int) (itemHeight));
-                    drawCenter(canvas, paintA, as[j1],maxTextHeight);
+                    as[k1] = (String) arrayList.get(l1);
                 }
-                canvas.restore();
+                k1++;
             }
-            j1++;
+            canvas.drawLine(0.0F, firstLineY, measuredWidth, firstLineY, paintC);
+            canvas.drawLine(0.0F, secondLineY, measuredWidth, secondLineY, paintC);
+            int j1 = 0;
+            while (j1 < itemCount) {
+                canvas.save();
+                // L=α* r
+                // (L * π ) / (π * r)
+                float itemHeight = maxTextHeight * lineSpacingMultiplier;
+                double radian = ((itemHeight * j1 - j2) * Math.PI) / halfCircumference;
+                float angle = (float) (90D - (radian / Math.PI) * 180D);
+                if (angle >= 90F || angle <= -90F) {
+                    canvas.restore();
+                } else {
+                    int translateY = (int) (radius - Math.cos(radian) * radius - (Math.sin(radian) * maxTextHeight) / 2D);
+                    canvas.translate(0.0F, translateY);
+                    canvas.scale(1.0F, (float) Math.sin(radian));
+                    if (translateY <= firstLineY && maxTextHeight + translateY >= firstLineY) {
+                        canvas.save();
+                        //top = 0,left = (measuredWidth - maxTextWidth)/2
+                        canvas.clipRect(0, 0, measuredWidth, firstLineY - translateY);
+                        drawCenter(canvas, paintA, as[j1],maxTextHeight);
+                        canvas.restore();
+                        canvas.save();
+                        canvas.clipRect(0, firstLineY - translateY, measuredWidth, (int) (itemHeight));
+                        drawCenter(canvas, paintB, as[j1], maxTextHeight);
+                        canvas.restore();
+                    } else if (translateY <= secondLineY && maxTextHeight + translateY >= secondLineY) {
+                        canvas.save();
+                        canvas.clipRect(0, 0, measuredWidth, secondLineY - translateY);
+                        drawCenter(canvas, paintB, as[j1], maxTextHeight);
+                        canvas.restore();
+                        canvas.save();
+                        canvas.clipRect(0, secondLineY - translateY, measuredWidth, (int) (itemHeight));
+                        drawCenter(canvas, paintA, as[j1],maxTextHeight);
+                        canvas.restore();
+                    } else if (translateY >= firstLineY && maxTextHeight + translateY <= secondLineY) {
+                        canvas.clipRect(0, 0, measuredWidth, (int) (itemHeight));
+                        drawCenter(canvas, paintB, as[j1],maxTextHeight);
+                        selectedItem = arrayList.indexOf(as[j1]);
+                    } else {
+                        canvas.clipRect(0, 0, measuredWidth, (int) (itemHeight));
+                        drawCenter(canvas, paintA, as[j1],maxTextHeight);
+                    }
+                    canvas.restore();
+                }
+                j1++;
+            }
         }
+       
         super.onDraw(canvas);
     }
 
